@@ -3,6 +3,7 @@
 #   include <Windows.h>
 #endif
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include "application.hpp"
@@ -11,6 +12,29 @@
 #define WINDOW_W 800
 #define WINDOW_H 600
 #define TIME_STEP 200
+
+bool load_submodules()
+{
+    if (SDL_Init(SDL_INIT_VIDEO) == 0)
+    {
+        if (IMG_Init(IMG_INIT_PNG) == IMG_INIT_PNG)
+        {
+            return true;
+        }
+        else
+        {
+            fprintf(stderr, "IMG_Init: %s\n", IMG_GetError());
+        }
+
+        SDL_Quit();
+    }
+    else
+    {
+        fprintf(stderr, "SDL_Init: %s\n", SDL_GetError());
+    }
+
+    return false;
+}
 
 int main(int argc, char* argv[])
 {
@@ -26,7 +50,7 @@ int main(int argc, char* argv[])
 	SDL_Window* window = NULL;
 	SDL_GLContext context = NULL;
 
-	if (SDL_Init(SDL_INIT_VIDEO) == 0)
+	if (load_submodules())
 	{
 		window = SDL_CreateWindow(
 			WINDOW_TITLE,
@@ -109,11 +133,8 @@ int main(int argc, char* argv[])
 			fprintf(stderr, "SDL_CreateWindow: %s\n", SDL_GetError());
 		}
 
+		IMG_Quit();
 		SDL_Quit();
-	}
-	else
-	{
-		fprintf(stderr, "SDL_Init: %s\n", SDL_GetError());
 	}
 
 	return (window && context) ? EXIT_SUCCESS : EXIT_FAILURE;

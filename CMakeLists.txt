@@ -17,12 +17,22 @@ add_executable(engine
     src/texture.cpp
 )
 
+# target_link_libraries(engine
+#     mingw32
+#     SDL2main
+#     SDL2
+#     OpenGL32
+#     glew32
+#     yaml
+#     assimp
+# )
+
 target_link_libraries(engine
-    mingw32
-    SDL2main
-    SDL2
-    OpenGL32
-    glew32
-    yaml
-    assimp
-)
+        SDL2main
+        SDL2
+        SDL2_image
+        GL
+        GLEW
+        yaml
+        assimp
+        )

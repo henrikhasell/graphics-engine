@@ -16,4 +16,14 @@ protected:
 	GLuint uniform_viewMatrix;
 };
 
+class TextRenderer : public Renderer
+{
+public:
+	virtual bool initialise(const char vertex[], const char fragment[]);
+	virtual void begin();
+	virtual void end();
+protected:
+	GLuint uniform_projectionMatrix;
+};
+
 #endif

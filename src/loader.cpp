@@ -17,11 +17,11 @@ bool Model_Load(Model *model, const aiScene *scene)
 	{
 		const aiMesh* mesh = scene->mMeshes[i];
 
-		Vertex* vertices = new Vertex[mesh->mNumVertices];
+		Vertex3D* vertices = new Vertex3D[mesh->mNumVertices];
 
 		for (unsigned int j = 0; j < mesh->mNumVertices; j++)
 		{
-			Vertex* current_vertex = vertices + j;
+			Vertex3D* current_vertex = vertices + j;
 
 			const aiVector3D* position = mesh->mVertices + j;
 
