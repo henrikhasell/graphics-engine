@@ -31,7 +31,7 @@ bool SimpleRenderer::initialise(const char vertex[], const char fragment[])
 	);
 
 	const glm::mat4 view_matrix = glm::lookAt(
-		glm::vec3(0.0f, 1.5f, 5.0f),
+		glm::vec3(0.0f, 11.5f, 15.0f),
 		glm::vec3(0.0f, 1.5f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f)
 	);
@@ -60,11 +60,6 @@ void SimpleRenderer::begin()
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, position));
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, colour));
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, uv));
 }
 
 void SimpleRenderer::end()
@@ -73,6 +68,24 @@ void SimpleRenderer::end()
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
 	glDisableVertexAttribArray(3);
+}
+
+void SimpleRenderer::transform(const glm::vec3 &position)
+{
+    const glm::mat4 model_matrix = glm::translate(glm::mat4(1.0), position);
+
+    glUniformMatrix4fv(
+            uniform_modelMatrix,
+            1, GL_FALSE, &model_matrix[0][0]
+    );
+}
+
+void SimpleRenderer::bindVAO() const
+{
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, position));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, colour));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, normal));
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3D), (void*)offsetof(Vertex3D, uv));
 }
 
 bool TextRenderer::initialise(const char *vertex, const char *fragment)
@@ -105,13 +118,16 @@ void TextRenderer::begin()
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(Vertex2D, position));
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(Vertex2D, uv));
 }
 
 void TextRenderer::end()
 {
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
+}
+
+void TextRenderer::bindVAO() const
+{
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(Vertex2D, position));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(Vertex2D, uv));
 }

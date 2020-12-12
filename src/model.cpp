@@ -12,9 +12,12 @@ Model::~Model()
 	glDeleteBuffers(1, &index_buffer);
 }
 
-void Model::draw() const
+void Model::draw(const Renderer &renderer) const
 {
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
+
+	renderer.bindVAO();
+
 	glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, (GLvoid*)0);
 }

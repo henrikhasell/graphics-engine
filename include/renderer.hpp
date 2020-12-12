@@ -12,6 +12,7 @@ public:
 	virtual bool initialise(const char vertex[], const char fragment[]);
 	virtual void begin();
 	virtual void end() = 0;
+    virtual void bindVAO() const = 0;
 protected:
 	Program program;
 	Shader vertex_shader;

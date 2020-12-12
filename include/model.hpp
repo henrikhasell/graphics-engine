@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
+#include "renderer.hpp"
 
 struct Vertex3D
 {
@@ -24,9 +25,9 @@ class Model
 public:
 	Model();
 	~Model();
-	void draw() const;
+	void draw(const Renderer &renderer) const;
 
-    template <typename T=Vertex3D>
+    template <typename T>
 	void data(
 		const T vertex_data[],
 		const GLuint index_data[],

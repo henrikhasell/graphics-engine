@@ -5,6 +5,7 @@
 #include <vector>
 #include <GL/glew.h>
 #include <glm/vec2.hpp>
+#include "model.hpp"
 
 namespace BitmapText
 {
@@ -61,6 +62,7 @@ namespace BitmapText
         {'8', {128, 24, 12, 20, 0, 0}},
         {'9', {144, 24, 12, 20, 0, 0}},
         {',', {160, 30, 6, 12, 0, 6}},
+        {':', {160, 30, 8, 14, 0, 6}},
         {';', {176, 30, 8, 14, 0, 6}},
         {'<', {192, 26, 12, 18, 0, 2}},
         {'=', {208, 30, 12, 10, 0, 6}},
@@ -131,17 +133,21 @@ namespace BitmapText
         {'~', {224, 120, 14, 8, 0, 0}}
     };
 
-    class MeshBuilder
+    class Factory
     {
     public:
-        MeshBuilder(float texture_width, float texture_height, const std::map<char, CharInfo> &character_map) :
+        Factory(
+            float texture_width,
+            float texture_height,
+            const std::map<char, CharInfo> &character_map
+        ) :
             texture_width(texture_width),
             texture_height(texture_height),
             character_map(character_map)
         {
 
         }
-        void addRow(const std::string &text, float x, float y)
+        void addRow(float x, float y, const std::string &text)
         {
             float cursor_offset = 0.0f;
 
@@ -162,18 +168,19 @@ namespace BitmapText
                 const float v_min = char_info.y / texture_height;
                 const float v_max = (char_info.y + char_info.h) / texture_height;
 
+                const float px = char_info.px;
+                const float py = char_info.py;
+
+                const float w = char_info.w;
+                const float h = char_info.h;
+
                 if (current_char != ' ')
                 {
-                    const float px = char_info.px;
-                    const float py = char_info.py;
-
-                    const float w = char_info.w;
-                    const float h = char_info.h;
 
                     Vertex2D v1 = {
                         .position = {
-                            .x = x + + px + cursor_offset,
-                            .y = x + + py
+                            .x = x + px + cursor_offset,
+                            .y = y + py
                         },
                         .uv = {
                             .u = u_min,
@@ -183,8 +190,8 @@ namespace BitmapText
 
                     Vertex2D v2 = {
                         .position = {
-                            .x = x + + px + cursor_offset + w,
-                            .y = x + + py
+                            .x = x + px + cursor_offset + w,
+                            .y = y + py
                         },
                         .uv = {
                             .u = u_max,
@@ -194,8 +201,8 @@ namespace BitmapText
 
                     Vertex2D v3 = {
                         .position = {
-                            .x = x + + px + cursor_offset,
-                            .y = x + + py + h
+                            .x = x + px + cursor_offset,
+                            .y = y + py + h
                         },
                         .uv = {
                             .u = u_min,
@@ -205,8 +212,8 @@ namespace BitmapText
 
                     Vertex2D v4 = {
                         .position = {
-                            .x = x + + px + cursor_offset + w,
-                            .y = x + + py + h
+                            .x = x + px + cursor_offset + w,
+                            .y = y + py + h
                         },
                         .uv = {
                             .u = u_max,
@@ -219,16 +226,29 @@ namespace BitmapText
                     vertices.push_back(v3);
                     vertices.push_back(v4);
 
-                    const GLuint index_offset = (indices.size() / 6) / 4;
+                    const GLuint index_offset = static_cast<GLuint>(indices.size() / 6) * 4;
 
+                    indices.push_back(index_offset + 2);
+                    indices.push_back(index_offset + 1);
                     indices.push_back(index_offset + 0);
-                    indices.push_back(index_offset + 1);
+
                     indices.push_back(index_offset + 2);
-                    indices.push_back(index_offset + 1);
                     indices.push_back(index_offset + 3);
-                    indices.push_back(index_offset + 2);
+                    indices.push_back(index_offset + 1);
+
                 }
+
+                cursor_offset += char_info.advance ? char_info.advance : w + px;
             }
+        }
+        void updateModel(Model &model) const
+        {
+            model.data(
+                vertices.data(),
+                indices.data(),
+                static_cast<GLuint>(vertices.size()),
+                static_cast<GLuint>(indices.size())
+            );
         }
     protected:
         const float texture_width;

@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 					Uint32 time_curr;
 
 					bool finished = false;
-					Application_Initialise();
+					Application *application = new TestApplication();
 
 					while (!finished)
 					{
@@ -94,25 +94,24 @@ int main(int argc, char* argv[])
 							}
 							else if (event.type == SDL_KEYUP)
 							{
-								Application_HandleKeyRelease(&event.key);
+								application->handle_key_up(event.key);
 							}
 							else if (event.type == SDL_KEYDOWN)
 							{
-								Application_HandleKeyPress(&event.key);
+								application->handle_key_down(event.key);
 							}
 						}
 
 						for (time_curr = SDL_GetTicks(); time_curr - time_prev > TIME_STEP; time_prev += TIME_STEP)
 						{
-							Application_TimeStep();
+							application->time_step();
 						}
 
-						glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-						Application_DrawFrame();
+						application->draw_frame();
 						SDL_GL_SwapWindow(window);
 					}
 
-					Application_Cleanup();
+					delete application;
 				}
 				else
 				{
